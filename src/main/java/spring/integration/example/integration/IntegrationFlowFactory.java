@@ -52,7 +52,6 @@ public class IntegrationFlowFactory implements IIntegrationFlowFactory {
 
     private AmqpTemplate getAmqpTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMandatory(true);
         return rabbitTemplate;
     }
 
