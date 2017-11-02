@@ -26,7 +26,7 @@ public class PublisherApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000000; i++) {
             String accountId = String.valueOf(i);
             String email = String.format("test+%s@test.test", accountId);
 
@@ -42,4 +42,3 @@ public class PublisherApplication implements CommandLineRunner {
         }
     }
 }
-

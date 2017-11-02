@@ -11,6 +11,10 @@ import org.springframework.integration.dsl.amqp.Amqp;
 import org.springframework.integration.dsl.support.Transformers;
 import org.springframework.stereotype.Component;
 
+/**
+ * Adapter is unidirectional
+ * Gateway is bidirectional
+ */
 @Component
 public class IntegrationFlowFactory implements IIntegrationFlowFactory {
     @Autowired
@@ -19,6 +23,10 @@ public class IntegrationFlowFactory implements IIntegrationFlowFactory {
     @Autowired
     private AmqpAdmin amqpAdmin;
 
+    /**
+     * Returns a one way (Amqp.inboundAdapter) inbound integration flow which will deliver messages to the given {@code toMessageChannel}
+     * based on the given {@code fromExchange} and {@code exchangeRoutingKey}.
+     */
     @Override
     public IntegrationFlow buildConsumingIntegrationFlow(String fromExchange, String exchangeRoutingKey, String toMessageChannel, String errorMessageChannel, int concurrentConsumers, int prefetchCount) {
         Queue queue = buildDurableQueue("auto-generated-queue-name-based-on-project");
@@ -30,13 +38,16 @@ public class IntegrationFlowFactory implements IIntegrationFlowFactory {
         Binding binding = buildBinding(queue, exchange, exchangeRoutingKey);
         amqpAdmin.declareBinding(binding);
 
-        return IntegrationFlows.from(Amqp.inboundGateway(getListenerContainer(queue, concurrentConsumers, prefetchCount))
+        return IntegrationFlows.from(Amqp.inboundAdapter(getListenerContainer(queue, concurrentConsumers, prefetchCount))
                 .errorChannel(errorMessageChannel))
                 .transform(Transformers.fromJson())
                 .channel(toMessageChannel)
                 .get();
     }
 
+    /**
+     * Returns a one way (Amqp.outboundAdapter) outbound integration flow which will deliver messages to the given {@code toExchange} using the given {@code exchangeRoutingKey}
+     */
     @Override
     public IntegrationFlow buildPublishingIntegrationFlow(String toExchange, String exchangeRoutingKey, String fromMessageChannel) {
         Exchange exchange = buildDurableTopicExchange(toExchange);

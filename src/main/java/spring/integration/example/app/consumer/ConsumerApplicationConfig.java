@@ -28,15 +28,24 @@ public class ConsumerApplicationConfig {
     private static final String ACCOUNT_UPDATE_SECRET_MESSAGE_CHANNEL = "ACCOUNT_UPDATE_SECRET_MESSAGE_CHANNEL";
     private static final String ACCOUNT_UPDATE_EMAIL_MESSAGE_CHANNEL = "ACCOUNT_UPDATE_EMAIL_MESSAGE_CHANNEL";
 
+    /**
+     * Consume message from the ACCOUNT exchange and routing key account.update.*
+     * Wildcard (*) is used to subscribe to all account updates.
+     * Each consuming application would define routing key based on what data they want.
+     */
     @Bean
     public IntegrationFlow consumeFromQueueBoundToExchangeFlow() {
         return integrationFlowFactory.buildConsumingIntegrationFlow(
                 "ACCOUNT",
                 "account.update.*",
                 ACCOUNT_UPDATE_MESSAGE_CHANNEL,
-                SharedFailedFlow.CHANNEL_NAME, 5, 5);
+                SharedFailedFlow.CHANNEL_NAME, 100, 5);
     }
 
+    /**
+     * Route specific account.update.X messages to their handler.
+     * Each consuming application would define their routing and handlers.
+     */
     @Bean
     public IntegrationFlow printConsumedEventsFlowDefinition() {
         return IntegrationFlows.from(ACCOUNT_UPDATE_MESSAGE_CHANNEL)

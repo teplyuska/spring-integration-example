@@ -49,6 +49,9 @@ public class PublisherApplicationConfig {
         return integrationFlowFactory.buildPublishingIntegrationFlow("ACCOUNT", "account.update.email", UPDATE_EMAIL_MESSAGE_CHANNEL);
     }
 
+    /**
+     * One way MessagingGateway to dispatch Events to possible consumers
+     */
     @MessagingGateway(errorChannel = SharedFailedFlow.CHANNEL_NAME)
     public interface IAccountEventPublisher {
         /**
